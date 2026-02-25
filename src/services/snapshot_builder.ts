@@ -2,18 +2,15 @@ import { exec as execCb } from 'child_process'
 import { promisify } from 'util'
 import fs from 'fs'
 import path from 'path'
-import dotenv from 'dotenv'
 import { AppDataSource } from '../data/data_source.js'
 import { Snapshot } from '../entities/snapshot.js'
-
-dotenv.config()
+import { config, paths } from '../config.js'
 
 const exec = promisify(execCb)
 
-const SYSTEM1_REPOSITORY =
-  process.env.SYSTEM1_REPOSITORY || 'https://github.com/tuliptrust/tulip.git'
-const TEMPORARY_FOLDER = process.env.TEMPORARY_FOLDER || './data/temp'
-const SNAPSHOTS_FOLDER = process.env.SNAPSHOTS_FOLDER || './data/snapshots'
+const SYSTEM1_REPOSITORY = config.system1Repository
+const TEMPORARY_FOLDER = paths.temp
+const SNAPSHOTS_FOLDER = paths.snapshots
 
 const REPO_DIR = path.resolve(TEMPORARY_FOLDER, 'system1-repo')
 
@@ -61,7 +58,7 @@ async function prepareRepo(gitRef: string) {
 }
 
 async function copyDistToSnapshotFolder(snapshotId: number) {
-  const distDir = path.join(REPO_DIR, 'dist') // Astro default
+  const distDir = path.join(REPO_DIR, 'dist')
   if (!fs.existsSync(distDir)) {
     throw new Error(`Build output not found at: ${distDir}`)
   }
@@ -71,7 +68,6 @@ async function copyDistToSnapshotFolder(snapshotId: number) {
   const targetPath = path.join(SNAPSHOTS_FOLDER, targetFolderName)
 
   await fs.promises.rm(targetPath, { recursive: true, force: true })
-  // fs.cp is available in Node 16+
   await fs.promises.cp(distDir, targetPath, { recursive: true })
 
   return targetFolderName

@@ -1,15 +1,11 @@
 import 'reflect-metadata'
-import dotenv from 'dotenv'
-import path from 'path'
 import fs from 'fs'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { serveStatic } from '@hono/node-server/serve-static'
-import { shell } from './routes/shell.js'
-import { admin } from './routes/admin.js'
 import { AppDataSource } from './data/data_source.js'
-
-dotenv.config()
+import { config, paths } from './config.js'
+import { routes } from './routes/index.js'
 
 function ensureDirSync(dir: string) {
   if (!fs.existsSync(dir)) {
@@ -19,32 +15,25 @@ function ensureDirSync(dir: string) {
 
 const app = new Hono()
 
-// Resolve and ensure folders exist
-const SNAPSHOTS_FOLDER = process.env.SNAPSHOTS_FOLDER || './data/snapshots'
-const TEMPORARY_FOLDER = process.env.TEMPORARY_FOLDER || './data/temp'
-
-const snapshotsRoot = path.resolve(SNAPSHOTS_FOLDER)
-const tempRoot = path.resolve(TEMPORARY_FOLDER)
+const snapshotsRoot = paths.snapshots
+const tempRoot = paths.temp
 
 ensureDirSync(snapshotsRoot)
 ensureDirSync(tempRoot)
 
-// Serve built snapshots as static files
-const dataDir = path.dirname(snapshotsRoot) // Get parent directory (./data)
+app.use(
+  '/snapshots/*',
+  serveStatic({
+    root: snapshotsRoot,
+    rewriteRequestPath: (path) => path.replace(/^\/snapshots/, ''),
+  }),
+)
 
-console.log(`Serving snapshots from ${snapshotsRoot}`);
-console.log(`Static root set to ${dataDir}`);
+console.log(`Serving snapshots from ${snapshotsRoot}`)
 
-// Register the middleware with the app
-app.use('/snapshots/*', serveStatic({
-  root: dataDir,
-}))
+app.route("/", routes);
 
-// Mount routes
-app.route('/', shell)
-app.route('/admin', admin)
-
-const port = Number(process.env.PORT || 3000)
+const port = config.port
 
 AppDataSource.initialize()
   .then(() => {
