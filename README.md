@@ -1,8 +1,6 @@
-```
-pnpm install
-pnpm run dev
-```
+Copy and rename .env.example to .env, fill it in, then:
 
 ```
-open http://localhost:3000
+pnpm i
+pnpm run dev
 ```

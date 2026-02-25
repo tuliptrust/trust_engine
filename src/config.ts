@@ -24,6 +24,8 @@ export const config = {
   port: getRequiredPort('PORT'),
   system1Repository: getRequiredEnv('SYSTEM1_REPOSITORY'),
   dataFolder: path.resolve(getRequiredEnv('DATA_FOLDER')),
+  adminUser: getRequiredEnv('ADMIN_USER'),
+  adminPassword: getRequiredEnv('ADMIN_PASSWORD'),
 }
 
 export const paths = {
