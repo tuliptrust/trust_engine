@@ -45,7 +45,15 @@
   gap: 0.5rem;
 }
 
-.snapshot-btn {
+a.snapshot-btn {
   padding: 1rem;
+  text-align: center;
   background-color: var(--color-primary1);
+}
+
+a.snapshot-btn:hover,
+a.snapshot-btn:focus,
+a.snapshot-btn:active {
+  background-color: var(--color-highlight);
+  text-decoration: none;
 }

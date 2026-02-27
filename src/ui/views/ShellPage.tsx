@@ -33,8 +33,7 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
                     {s.commitHash.slice(0, 7)}
                   </div>
                   <div className="snapshot-meta">
-                    by {s.submitter} &bull;{" "}
-                    {s.createdAt.toISOString().slice(0, 16).replace("T", " ")}
+                    by {s.submitter} &bull; {s.createdAt.toLocaleDateString()}
                   </div>
                 </a>
               ))}
