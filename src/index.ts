@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import fs from 'fs'
-import { serve } from '@hono/node-server'
+import path from 'path'
 import { Hono } from 'hono'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { AppDataSource } from './data/data_source.js'
@@ -21,33 +21,35 @@ const tempRoot = paths.temp
 ensureDirSync(snapshotsRoot)
 ensureDirSync(tempRoot)
 
+// Static assets
+app.use(
+  '/assets/*',
+  serveStatic({
+    root: path.join(process.cwd(), 'public'),
+    rewriteRequestPath: (requestPath) => requestPath.replace(/^\/assets/, ''),
+  }),
+)
+
+// Snapshots
 app.use(
   '/snapshots/*',
   serveStatic({
     root: snapshotsRoot,
-    rewriteRequestPath: (path) => path.replace(/^\/snapshots/, ''),
+    rewriteRequestPath: (requestPath) => requestPath.replace(/^\/snapshots/, ''),
   }),
 )
 
 console.log(`Serving snapshots from ${snapshotsRoot}`)
 
-app.route("/", routes);
+app.route("/", routes)
 
-const port = config.port
-
-AppDataSource.initialize()
-  .then(() => {
-    serve(
-      {
-        fetch: app.fetch,
-        port,
-      },
-      (info) => {
-        console.log(`Server is running on http://localhost:${info.port}`)
-      },
-    )
-  })
-  .catch((err) => {
+// Initialize database
+if (!AppDataSource.isInitialized) {
+  await AppDataSource.initialize().catch((err) => {
     console.error('Error during Data Source initialization', err)
     process.exit(1)
   })
+  console.log('Database initialized')
+}
+
+export default app
