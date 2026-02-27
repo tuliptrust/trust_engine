@@ -6,7 +6,7 @@ type LoginPageProps = {
 
 export function LoginPage({ error }: LoginPageProps) {
   return (
-    <Layout title="🌷">
+    <Layout title="🌷" stylesheet="/public/admin.css">
       <div class="page login-page">
         <header>
           <h1>🌷</h1>

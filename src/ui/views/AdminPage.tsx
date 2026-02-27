@@ -9,7 +9,7 @@ type AdminPageProps = {
 
 export function AdminPage({ snapshots, error, message }: AdminPageProps) {
   return (
-    <Layout title="TrustEngine Admin">
+    <Layout title="TrustEngine Admin" stylesheet="/public/admin.css">
       <div class="page admin-page">
         <header>
           <div>
