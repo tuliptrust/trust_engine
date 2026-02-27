@@ -18,7 +18,7 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
         <div className="content">
           <aside id="menu" className="menu">
             <div className="menu-list">
-              {snapshots.map((s) => (
+              {snapshots.map((s, i) => (
                 <a
                   key={s.commitHash}
                   href={`/?commit=${s.commitHash}`}
@@ -28,12 +28,14 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
                       ? " current"
                       : "")
                   }
+                  style={{ padding: `1rem ${1 + i}rem` }}
                 >
                   <div className="snapshot-title">
                     {s.commitHash.slice(0, 7)}
                   </div>
+                  <div className="snapshot-meta">by {s.submitter}</div>
                   <div className="snapshot-meta">
-                    by {s.submitter} &bull; {s.createdAt.toLocaleDateString()}
+                    {s.createdAt.toLocaleDateString()}
                   </div>
                 </a>
               ))}
