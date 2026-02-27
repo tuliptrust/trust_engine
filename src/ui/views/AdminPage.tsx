@@ -11,6 +11,17 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
   return (
     <Layout title="TrustEngine Admin" stylesheet="/public/admin.css">
       <div class="page admin-page">
+        <div
+          id="snapshot-loading"
+          class="loading-overlay"
+          style="display: none"
+        >
+          <div class="loading-box">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Building snapshot… This may take a minute.</p>
+          </div>
+        </div>
+
         <header>
           <div>
             <h1>TrustEngine Admin</h1>
@@ -25,7 +36,11 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
 
         <section>
           <h2>Create Snapshot</h2>
-          <form method="post" action="/admin/snapshots">
+          <form
+            method="post"
+            action="/admin/snapshots"
+            onsubmit="const overlay = document.getElementById('snapshot-loading'); if (overlay) overlay.style.display = 'flex'; const btn = this.querySelector('button[type=submit]'); if (btn) { btn.disabled = true; btn.textContent = 'Creating…'; }"
+          >
             <label for="submitter">Submitter</label>
             <input
               id="submitter"
@@ -43,6 +58,7 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
           </form>
         </section>
 
+        {/* Existing snapshots table unchanged */}
         <section>
           <h2>Existing Snapshots</h2>
           <table>

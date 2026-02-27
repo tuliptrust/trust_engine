@@ -4,7 +4,7 @@ import { Snapshot } from "../entities/snapshot.js";
 import {
   createSnapshot,
   removeSnapshot,
-} from "../services/snapshot_builder.js";
+} from "../services/snapshot_service.js";
 import { AdminPage } from "../ui/views/AdminPage.js";
 import { isAdminAuthenticated } from "../services/session_service.js";
 
