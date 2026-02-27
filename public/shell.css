@@ -1,0 +1,51 @@
+/* shell.css */
+.shell {
+  height: 100vh;
+  position: relative;
+}
+
+.shell header {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+}
+
+.shell .main-view iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.shell .menu {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.1s ease;
+}
+
+.shell .menu.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shell .menu-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.snapshot-btn {
+  padding: 1rem;
+  background-color: var(--color-primary1);
+}

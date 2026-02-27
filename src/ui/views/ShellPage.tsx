@@ -8,70 +8,72 @@ type ShellPageProps = {
 
 export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
   return (
-    <Layout title="Tulip Trust Collective">
-      <div class="app">
+    <Layout title="Tulip Trust Collective" stylesheet="/public/shell.css">
+      <div className="shell">
         <header>
           <button id="menuToggle" aria-label="Open menu">
             ☰
           </button>
-          <div class="brand">Tulip Trust Collective</div>
         </header>
-        <div class="content">
-          <aside id="sidebar" class="sidebar">
-            <h3>Snapshots</h3>
-            <div class="snapshot-list">
+        <div className="content">
+          <aside id="menu" className="menu">
+            <div className="menu-list">
               {snapshots.map((s) => (
                 <a
+                  key={s.id}
                   href={`/?id=${s.id}`}
-                  class={
+                  className={
                     "snapshot-btn" +
                     (s.id === currentSnapshot?.id ? " current" : "")
                   }
                 >
-                  <div class="snapshot-title">
+                  <div className="snapshot-title">
                     {s.label && s.label.length > 0
                       ? s.label
                       : `Snapshot #${s.id}`}
                   </div>
-                  <div class="snapshot-meta">
+                  <div className="snapshot-meta">
                     by {s.submitter} &bull; {s.commitHash.slice(0, 7)} &bull;{" "}
                     {s.createdAt.toISOString().slice(0, 16).replace("T", " ")}
                   </div>
                 </a>
               ))}
               {snapshots.length === 0 && (
-                <div class="snapshot-meta">
+                <div className="snapshot-meta">
                   No snapshots yet. Visit <a href="/admin">admin</a> to create
                   one.
                 </div>
               )}
             </div>
           </aside>
-          <main class="main-view">
+          <main className="main-view">
             {currentSnapshot ? (
               <iframe
                 src={`/snapshots/${currentSnapshot.folder}/index.html`}
                 title={`Snapshot ${currentSnapshot.id}`}
               />
             ) : (
-              <div class="empty-state">
+              <div className="empty-state">
                 No snapshot selected. Create one in <a href="/admin">admin</a>.
               </div>
             )}
           </main>
         </div>
       </div>
-      <script>
-        {`
-          const toggle = document.getElementById('menuToggle');
-          const sidebar = document.getElementById('sidebar');
-          if (toggle && sidebar) {
-            toggle.addEventListener('click', () => {
-              sidebar.classList.toggle('open');
-            });
-          }
-        `}
-      </script>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function () {
+              var toggle = document.getElementById('menuToggle');
+              var menu = document.getElementById('menu');
+              if (!toggle || !menu) return;
+              toggle.addEventListener('click', function () {
+                menu.classList.toggle('open');
+              });
+            })();
+          `,
+        }}
+      />
     </Layout>
   );
 }

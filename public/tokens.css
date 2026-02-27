@@ -1,5 +1,7 @@
+/* tokens.css */
 :root {
   --font: sans-serif;
   --color-bg: #fff;
-  --color-text: #00ff00;
+  --color-text: #333;
+  --color-primary1: #00ff00;
 }
