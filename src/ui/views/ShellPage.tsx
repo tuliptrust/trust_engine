@@ -62,15 +62,26 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
       <script
         dangerouslySetInnerHTML={{
           __html: `
-            (function () {
-              var toggle = document.getElementById('menuToggle');
-              var menu = document.getElementById('menu');
-              if (!toggle || !menu) return;
-              toggle.addEventListener('click', function () {
-                menu.classList.toggle('open');
-              });
-            })();
-          `,
+          (function () {
+            var toggle = document.getElementById('menuToggle');
+            var menu = document.getElementById('menu');
+            if (!toggle || !menu) return;
+
+            // Toggle menu when clicking the button
+            toggle.addEventListener('click', function () {
+              menu.classList.toggle('open');
+            });
+
+            // Close menu when clicking on blank space (the overlay background)
+            menu.addEventListener('click', function (event) {
+              // Only close if the click is directly on the <aside id="menu">,
+              // not on any of its children (like the menu items).
+              if (event.target === menu) {
+                menu.classList.remove('open');
+              }
+            });
+          })();
+        `,
         }}
       />
     </Layout>
