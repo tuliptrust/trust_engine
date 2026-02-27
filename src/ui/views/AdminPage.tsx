@@ -34,13 +34,6 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
               required
             />
 
-            <label for="label">Label (optional)</label>
-            <input
-              id="label"
-              name="label"
-              placeholder="e.g. first snapshot, UI experiment, etc."
-            />
-
             <label for="gitRef">
               Git ref (branch / tag / commit, default: main)
             </label>
@@ -56,7 +49,6 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Label</th>
                 <th>Submitter</th>
                 <th>Commit</th>
                 <th>Git Ref</th>
@@ -68,7 +60,6 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
               {snapshots.map((s) => (
                 <tr>
                   <td>{s.id}</td>
-                  <td>{s.label || "-"}</td>
                   <td>{s.submitter}</td>
                   <td>{s.commitHash.slice(0, 7)}</td>
                   <td>{s.gitRef || "-"}</td>
@@ -76,7 +67,7 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
                     {s.createdAt.toISOString().slice(0, 16).replace("T", " ")}
                   </td>
                   <td>
-                    <a href={`/?id=${s.id}`} target="_blank">
+                    <a href={`/?commit=${s.commitHash}`} target="_blank">
                       Open
                     </a>
                   </td>
@@ -84,7 +75,7 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
               ))}
               {snapshots.length === 0 && (
                 <tr>
-                  <td colSpan={7}>No snapshots yet.</td>
+                  <td colSpan={6}>No snapshots yet.</td>
                 </tr>
               )}
             </tbody>

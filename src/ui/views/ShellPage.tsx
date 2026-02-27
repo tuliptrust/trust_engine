@@ -20,20 +20,20 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
             <div className="menu-list">
               {snapshots.map((s) => (
                 <a
-                  key={s.id}
-                  href={`/?id=${s.id}`}
+                  key={s.commitHash}
+                  href={`/?commit=${s.commitHash}`}
                   className={
                     "snapshot-btn" +
-                    (s.id === currentSnapshot?.id ? " current" : "")
+                    (s.commitHash === currentSnapshot?.commitHash
+                      ? " current"
+                      : "")
                   }
                 >
                   <div className="snapshot-title">
-                    {s.label && s.label.length > 0
-                      ? s.label
-                      : `Snapshot #${s.id}`}
+                    {s.commitHash.slice(0, 7)}
                   </div>
                   <div className="snapshot-meta">
-                    by {s.submitter} &bull; {s.commitHash.slice(0, 7)} &bull;{" "}
+                    by {s.submitter} &bull;{" "}
                     {s.createdAt.toISOString().slice(0, 16).replace("T", " ")}
                   </div>
                 </a>
@@ -50,7 +50,7 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
             {currentSnapshot ? (
               <iframe
                 src={`/snapshots/${currentSnapshot.folder}/index.html`}
-                title={`Snapshot ${currentSnapshot.id}`}
+                title={`Snapshot ${currentSnapshot.commitHash.slice(0, 7)}`}
               />
             ) : (
               <div className="empty-state">

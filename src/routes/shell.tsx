@@ -11,9 +11,10 @@ shell.get("/", async (c) => {
     order: { createdAt: "DESC" },
   });
 
-  const idParam = c.req.query("id");
-  const currentId = idParam ? Number(idParam) : snapshots[0]?.id;
-  const currentSnapshot = snapshots.find((s) => s.id === currentId);
+  const commitParam = c.req.query("commit");
+  const currentSnapshot =
+    (commitParam && snapshots.find((s) => s.commitHash === commitParam)) ||
+    snapshots[0];
 
   return c.html(
     <ShellPage snapshots={snapshots} currentSnapshot={currentSnapshot} />,

@@ -91,10 +91,9 @@ async function fixSnapshotHtml(snapshotDir: string) {
 
 export async function createSnapshot(options: {
   submitter: string
-  label?: string
   gitRef?: string
 }) {
-  const { submitter, label, gitRef } = options
+  const { submitter, gitRef } = options
   const refToUse = gitRef && gitRef.trim().length > 0 ? gitRef.trim() : 'main'
 
   const snapshotRepo = AppDataSource.getRepository(Snapshot)
@@ -105,7 +104,6 @@ export async function createSnapshot(options: {
   // Step 2: create DB row to get ID
   let snapshot = snapshotRepo.create({
     submitter,
-    label: label || null,
     gitRef: refToUse,
     commitHash,
     folder: '', // fill after copy

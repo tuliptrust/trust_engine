@@ -33,7 +33,6 @@ admin.post("/snapshots", async (c) => {
   try {
     const body = await c.req.parseBody();
     const submitter = String(body["submitter"] || "").trim();
-    const label = String(body["label"] || "").trim();
     const gitRef = String(body["gitRef"] || "").trim() || "main";
 
     if (!submitter) {
@@ -42,7 +41,7 @@ admin.post("/snapshots", async (c) => {
       );
     }
 
-    const snapshot = await createSnapshot({ submitter, label, gitRef });
+    const snapshot = await createSnapshot({ submitter, gitRef });
 
     return c.redirect(
       "/admin?message=" +

@@ -14,9 +14,6 @@ export class Snapshot {
   submitter!: string
 
   @Column('text', { nullable: true })
-  label!: string | null
-
-  @Column('text', { nullable: true })
   gitRef!: string | null
 
   @Column('text')
