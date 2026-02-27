@@ -2,9 +2,10 @@ import 'reflect-metadata'
 import fs from 'fs'
 import path from 'path'
 import { Hono } from 'hono'
+import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { AppDataSource } from './data/data_source.js'
-import { config, paths } from './config.js'
+import { paths } from './config.js'
 import { routes } from './routes/index.js'
 
 function ensureDirSync(dir: string) {
@@ -23,25 +24,21 @@ ensureDirSync(tempRoot)
 
 // Static assets
 app.use(
-  '/assets/*',
+  '/public/*',
   serveStatic({
     root: path.join(process.cwd(), 'public'),
-    rewriteRequestPath: (requestPath) => requestPath.replace(/^\/assets/, ''),
+    rewriteRequestPath: (requestPath) => requestPath.replace(/^\/public/, ''),
   }),
 )
 
 // Snapshots
-app.use(
-  '/snapshots/*',
-  serveStatic({
-    root: snapshotsRoot,
-    rewriteRequestPath: (requestPath) => requestPath.replace(/^\/snapshots/, ''),
-  }),
-)
+app.use('/snapshots/*', serveStatic({
+  root: './data',
+}))
 
 console.log(`Serving snapshots from ${snapshotsRoot}`)
 
-app.route("/", routes)
+app.route('/', routes)
 
 // Initialize database
 if (!AppDataSource.isInitialized) {
@@ -52,4 +49,11 @@ if (!AppDataSource.isInitialized) {
   console.log('Database initialized')
 }
 
-export default app
+// Start HTTP server here
+const port = Number(process.env.PORT || 3001)
+console.log(`Hono server listening on http://localhost:${port}`)
+
+serve({
+  fetch: app.fetch,
+  port,
+})

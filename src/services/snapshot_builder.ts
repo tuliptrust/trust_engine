@@ -73,6 +73,22 @@ async function copyDistToSnapshotFolder(snapshotId: number) {
   return targetFolderName
 }
 
+// Fix asset URLs that Astro generated as root-relative, e.g. "/relative/..."
+// to be relative to the snapshot, e.g. "./relative/..."
+async function fixSnapshotHtml(snapshotDir: string) {
+  const indexPath = path.join(snapshotDir, 'index.html')
+
+  if (!fs.existsSync(indexPath)) {
+    console.warn(`No index.html found in snapshot dir: ${indexPath}`)
+    return
+  }
+
+  let html = await fs.promises.readFile(indexPath, 'utf8')
+  html = html.replace(/="\/relative\//g, '="./relative/')
+
+  await fs.promises.writeFile(indexPath, html, 'utf8')
+}
+
 export async function createSnapshot(options: {
   submitter: string
   label?: string
@@ -100,7 +116,11 @@ export async function createSnapshot(options: {
   const folderName = await copyDistToSnapshotFolder(snapshot.id)
   snapshot.folder = folderName
 
-  // Step 4: save folder info
+  // Step 4: fix asset URLs inside the snapshot’s HTML
+  const snapshotDir = path.join(SNAPSHOTS_FOLDER, folderName)
+  await fixSnapshotHtml(snapshotDir)
+
+  // Step 5: save folder info
   snapshot = await snapshotRepo.save(snapshot)
 
   return snapshot

@@ -2,8 +2,8 @@
   "name": "trust_engine",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
     "start": "node dist/index.js"
   },
   "dependencies": {
@@ -15,10 +15,8 @@
     "typeorm": "^0.3.28"
   },
   "devDependencies": {
-    "@hono/vite-dev-server": "^0.25.0",
     "@types/node": "^20.11.17",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3",
-    "vite": "^7.3.1"
+    "typescript": "^5.8.3"
   }
 }

@@ -10,9 +10,9 @@ export function Layout({ title = "Tulip Trust", children }: LayoutProps) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{title}</title>
-        <link rel="stylesheet" href="/tokens.css" />
-        <link rel="stylesheet" href="/global.css" />
-        <link rel="icon" href="/favicon.png" />
+        <link rel="stylesheet" href="/public/tokens.css" />
+        <link rel="stylesheet" href="/public/global.css" />
+        <link rel="icon" href="/public/favicon.png" />
       </head>
       <body>{children}</body>
     </html>
