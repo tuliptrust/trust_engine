@@ -8,11 +8,7 @@ import { config, paths } from '../config.js'
 
 const exec = promisify(execCb)
 
-const SYSTEM1_REPOSITORY = config.system1Repository
-const TEMPORARY_FOLDER = paths.temp
-const SNAPSHOTS_FOLDER = paths.snapshots
-
-const REPO_DIR = path.resolve(TEMPORARY_FOLDER, 'system1-repo')
+const REPO_DIR = path.resolve(paths.temp, 'system1-repo')
 
 async function ensureDir(dir: string) {
   await fs.promises.mkdir(dir, { recursive: true })
@@ -28,11 +24,11 @@ async function run(cmd: string, cwd?: string) {
 }
 
 async function prepareRepo(gitRef: string) {
-  await ensureDir(TEMPORARY_FOLDER)
+  await ensureDir(paths.temp)
 
   if (!fs.existsSync(REPO_DIR)) {
     console.log('Cloning System 1 repository...')
-    await run(`git clone ${SYSTEM1_REPOSITORY} "${REPO_DIR}"`)
+    await run(`git clone ${config.system1Repository} "${REPO_DIR}"`)
   }
 
   console.log('Fetching latest changes...')
@@ -63,9 +59,9 @@ async function copyDistToSnapshotFolder(snapshotId: number) {
     throw new Error(`Build output not found at: ${distDir}`)
   }
 
-  await ensureDir(SNAPSHOTS_FOLDER)
+  await ensureDir(paths.snapshots)
   const targetFolderName = String(snapshotId)
-  const targetPath = path.join(SNAPSHOTS_FOLDER, targetFolderName)
+  const targetPath = path.join(paths.snapshots, targetFolderName)
 
   await fs.promises.rm(targetPath, { recursive: true, force: true })
   await fs.promises.cp(distDir, targetPath, { recursive: true })
@@ -115,11 +111,24 @@ export async function createSnapshot(options: {
   snapshot.folder = folderName
 
   // Step 4: fix asset URLs inside the snapshot’s HTML
-  const snapshotDir = path.join(SNAPSHOTS_FOLDER, folderName)
+  const snapshotDir = path.join(paths.snapshots, folderName)
   await fixSnapshotHtml(snapshotDir)
 
   // Step 5: save folder info
   snapshot = await snapshotRepo.save(snapshot)
 
   return snapshot
+}
+
+export async function removeSnapshot(snapshotId: number) {
+  const snapshotRepo = AppDataSource.getRepository(Snapshot)
+
+  const snapshot = await snapshotRepo.findOne({ where: { id: snapshotId } })
+  if (!snapshot) {
+    throw new Error(`Snapshot ${snapshotId} not found`)
+  }
+
+  const snapshotDir = path.join(paths.snapshots, snapshot.folder)
+  await fs.promises.rm(snapshotDir, { recursive: true, force: true })
+  await snapshotRepo.remove(snapshot)
 }

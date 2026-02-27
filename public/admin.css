@@ -122,3 +122,7 @@
 .admin-page tbody tr:hover {
   background: #fafafa;
 }
+
+button.delete-button {
+  background: var(--color-quiet);
+}

@@ -1,7 +1,10 @@
 import { Hono } from "hono";
 import { AppDataSource } from "../data/data_source.js";
 import { Snapshot } from "../entities/snapshot.js";
-import { createSnapshot } from "../services/snapshot_builder.js";
+import {
+  createSnapshot,
+  removeSnapshot,
+} from "../services/snapshot_builder.js";
 import { AdminPage } from "../ui/views/AdminPage.js";
 import { isAdminAuthenticated } from "../services/session_service.js";
 
@@ -56,6 +59,29 @@ admin.post("/snapshots", async (c) => {
     console.error(err);
     const msg =
       err instanceof Error ? err.message : "Unknown error creating snapshot";
+    return c.redirect("/admin?error=" + encodeURIComponent(msg));
+  }
+});
+
+admin.post("/snapshots/:id/delete", async (c) => {
+  const idParam = c.req.param("id");
+  const snapshotId = Number(idParam);
+
+  if (!Number.isFinite(snapshotId) || snapshotId <= 0) {
+    return c.redirect(
+      "/admin?error=" + encodeURIComponent("Invalid snapshot ID"),
+    );
+  }
+
+  try {
+    await removeSnapshot(snapshotId);
+    return c.redirect(
+      "/admin?message=" + encodeURIComponent(`Snapshot #${snapshotId} deleted`),
+    );
+  } catch (err) {
+    console.error(err);
+    const msg =
+      err instanceof Error ? err.message : "Unknown error deleting snapshot";
     return c.redirect("/admin?error=" + encodeURIComponent(msg));
   }
 });

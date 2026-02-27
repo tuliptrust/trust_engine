@@ -54,6 +54,7 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
                 <th>Git Ref</th>
                 <th>Created</th>
                 <th>Open</th>
+                <th>Remove</th>
               </tr>
             </thead>
             <tbody>
@@ -71,11 +72,26 @@ export function AdminPage({ snapshots, error, message }: AdminPageProps) {
                       Open
                     </a>
                   </td>
+                  <td>
+                    <form
+                      method="post"
+                      action={`/admin/snapshots/${s.id}/delete`}
+                    >
+                      <button
+                        type="submit"
+                        class="delete-button"
+                        title="Delete snapshot"
+                        onclick="return confirm('Delete this snapshot? This cannot be undone.')"
+                      >
+                        ×
+                      </button>
+                    </form>
+                  </td>
                 </tr>
               ))}
               {snapshots.length === 0 && (
                 <tr>
-                  <td colSpan={6}>No snapshots yet.</td>
+                  <td colSpan={7}>No snapshots yet.</td>
                 </tr>
               )}
             </tbody>
