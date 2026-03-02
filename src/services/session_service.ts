@@ -17,7 +17,8 @@ export function establishAdminSession(c: Context) {
     path: "/",
     httpOnly: true,
     sameSite: "Lax",
-    secure: process.env.NODE_ENV === "production",
+    // secure: process.env.NODE_ENV === "production",
+    secure: false, // we are on http for now
     maxAge: 60 * 60 * 8, // 8 hours
   });
 }

@@ -62,12 +62,13 @@
 
 a.snapshot-btn {
   text-align: center;
-  background-color: var(--color-primary1);
+  color: var(--color-bg);
+  background-color: black;
 }
 
 a.snapshot-btn:hover,
 a.snapshot-btn:focus,
 a.snapshot-btn:active {
-  background-color: var(--color-quiet);
+  background-color: var(--color-text);
   text-decoration: none;
 }
