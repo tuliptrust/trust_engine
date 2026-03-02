@@ -34,9 +34,6 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
                     {s.commitHash.slice(0, 7)}
                   </div>
                   <div className="snapshot-meta">by {s.submitter}</div>
-                  <div className="snapshot-meta">
-                    {s.createdAt.toLocaleDateString()}
-                  </div>
                 </a>
               ))}
               {snapshots.length === 0 && (

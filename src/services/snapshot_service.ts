@@ -54,35 +54,56 @@ async function prepareRepo(gitRef: string) {
 }
 
 async function copyDistToSnapshotFolder(snapshotId: number) {
-  const distDir = path.join(REPO_DIR, 'dist')
+  const distDir = path.join(REPO_DIR, 'dist');
   if (!fs.existsSync(distDir)) {
-    throw new Error(`Build output not found at: ${distDir}`)
+    throw new Error(`Build output not found at: ${distDir}`);
   }
 
-  await ensureDir(paths.snapshots)
-  const targetFolderName = String(snapshotId)
-  const targetPath = path.join(paths.snapshots, targetFolderName)
+  await ensureDir(paths.snapshots);
+  const targetFolderName = String(snapshotId);
+  const targetPath = path.join(paths.snapshots, targetFolderName);
 
-  await fs.promises.rm(targetPath, { recursive: true, force: true })
-  await fs.promises.cp(distDir, targetPath, { recursive: true })
+  await fs.promises.rm(targetPath, { recursive: true, force: true });
+  await fs.promises.cp(distDir, targetPath, { recursive: true });
 
-  return targetFolderName
+  return targetFolderName;
 }
 
-// Fix asset URLs that Astro generated as root-relative, e.g. "/relative/..."
-// to be relative to the snapshot, e.g. "./relative/..."
-async function fixSnapshotHtml(snapshotDir: string) {
-  const indexPath = path.join(snapshotDir, 'index.html')
 
-  if (!fs.existsSync(indexPath)) {
-    console.warn(`No index.html found in snapshot dir: ${indexPath}`)
-    return
+// in your snapshot builder file
+
+async function fixSnapshotHtml(snapshotDir: string, folderName: string) {
+  // Collect all .html files under snapshotDir
+  const htmlFiles: string[] = [];
+
+  function walk(dir: string) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (entry.isFile() && full.endsWith('.html')) {
+        htmlFiles.push(full);
+      }
+    }
   }
 
-  let html = await fs.promises.readFile(indexPath, 'utf8')
-  html = html.replace(/="\/relative\//g, '="./relative/')
+  walk(snapshotDir);
 
-  await fs.promises.writeFile(indexPath, html, 'utf8')
+  const prefix = `/snapshots/${folderName}`;
+
+  for (const file of htmlFiles) {
+    let html = await fs.promises.readFile(file, 'utf8');
+
+    // Rewrite src="/..." and href="/..." to src="/snapshots/{folder}/..."
+    // Avoid touching protocol-relative URLs (//example.com) via (?!/)
+    html = html.replace(
+      /\b(src|href)=["']\/(?!\/)([^"']*)["']/g,
+      (_match, attr, urlPath) => `${attr}="${prefix}/${urlPath}"`
+    );
+
+    await fs.promises.writeFile(file, html, 'utf8');
+  }
 }
 
 export async function createSnapshot(options: {
@@ -107,12 +128,12 @@ export async function createSnapshot(options: {
   snapshot = await snapshotRepo.save(snapshot)
 
   // Step 3: copy built dist into its own folder
-  const folderName = await copyDistToSnapshotFolder(snapshot.id)
-  snapshot.folder = folderName
+  const folderName = await copyDistToSnapshotFolder(snapshot.id);
+  snapshot.folder = folderName;
 
   // Step 4: fix asset URLs inside the snapshot’s HTML
-  const snapshotDir = path.join(paths.snapshots, folderName)
-  await fixSnapshotHtml(snapshotDir)
+  const snapshotDir = path.join(paths.snapshots, folderName);
+  await fixSnapshotHtml(snapshotDir, folderName);
 
   // Step 5: save folder info
   snapshot = await snapshotRepo.save(snapshot)
