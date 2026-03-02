@@ -12,7 +12,7 @@ export function ShellPage({ snapshots, currentSnapshot }: ShellPageProps) {
       <div className="shell">
         <header>
           <button id="menuToggle" aria-label="Open menu">
-            ☰
+            <img src="/public/hamberger.svg" alt="" />
           </button>
         </header>
         <div className="content">

@@ -33,7 +33,7 @@ app.use(
 
 // Snapshots
 app.use('/snapshots/*', serveStatic({
-  root: './data',
+  root: paths.data,
 }))
 
 console.log(`Serving snapshots from ${snapshotsRoot}`)

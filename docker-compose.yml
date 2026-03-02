@@ -1,0 +1,22 @@
+services:
+  trust_engine:
+    build: .
+    container_name: trust_engine
+    restart: unless-stopped
+    env_file:
+      - .env
+
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+
+    # Always mount at /data inside the container
+    volumes:
+      - trust_engine_data:/data
+
+    # But still pass DATA_FOLDER from .env into the app.
+    # If it’s relative, you can override it here for Docker:
+    environment:
+      DATA_FOLDER: /data
+
+volumes:
+  trust_engine_data:
