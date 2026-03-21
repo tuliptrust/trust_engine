@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./deploy.sh user@remote-host [/remote/path]
 REMOTE="${1:-}"
 REMOTE_DIR="${2:-/opt/trust_engine}"
 
@@ -12,19 +11,26 @@ fi
 
 echo "Deploying to $REMOTE:$REMOTE_DIR"
 
-# Sync project files to remote (excluding node_modules and .git)
+# Ensure remote dir exists and is writable by the SSH user
+ssh -T "$REMOTE" "
+  set -e
+  sudo mkdir -p '$REMOTE_DIR'
+  sudo chown -R \$(id -un):\$(id -gn) '$REMOTE_DIR'
+"
+
+# Sync project files (excluding node_modules and .git)
 rsync -avz --delete \
   --exclude node_modules \
   --exclude .git \
   . "$REMOTE:$REMOTE_DIR"
 
-# Build and run on remote (no heredoc; everything is on one line)
+# Build and run on remote (use sudo for docker if required)
 ssh -T "$REMOTE" "
   set -e
   cd '$REMOTE_DIR'
-  docker compose build --pull
-  docker compose up -d --remove-orphans
-  docker compose ps
+  sudo docker compose build --pull
+  sudo docker compose up -d --remove-orphans
+  sudo docker compose ps
 "
 
 echo "Deployment complete."

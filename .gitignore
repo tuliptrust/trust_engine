@@ -19,6 +19,9 @@ node_modules/
 # data
 data/
 
+# built
+dist/
+
 # logs
 logs/
 *.log
